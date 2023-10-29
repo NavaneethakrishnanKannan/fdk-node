@@ -12,6 +12,8 @@ app.disable('x-powered-by');
 
 app.use(bodyParser.json());
 
+app.get("/", (req, res) => res.send("Server is Running"))
+
 // public routes
 
 app.use('/order/', routes.product);
