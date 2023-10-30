@@ -8,7 +8,7 @@ const routes = require('./routes');
 const bodyParser = require('body-parser');
 app.disable('x-powered-by');
 
-// app.use(cors);
+app.use(cors());
 
 app.use(bodyParser.json());
 

@@ -69,7 +69,7 @@ orderController.sentOTP = async (orderNo) => new Promise(async (resolve, reject)
     if (!phone) {
         return reject({ status: 500, msg: `Mobile Number Unavailable` });
     }
-    phone = 9095068478;
+    phone = "+919095068478";
     let otpResponse = sentOTP(phone);
     if (otpResponse.status === 200) {
         Order.updateOrder({ orderNo }, { $set: { "otp": { otp: otpResponse.otp, expire: addMinutes(10, new Date()) } } }).then(otpRes => {
