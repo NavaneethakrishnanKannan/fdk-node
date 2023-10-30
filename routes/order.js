@@ -2,6 +2,8 @@ const router = require('express').Router();
 const orderController = require('../controllers/order');
 const { celebrate, errors, Joi } = require('celebrate');
 
+
+/** Place the New Order. Params are Validated Using JOI */
 router.post('/placeorder', celebrate({
     body: Joi.object().keys({
         orderNo: Joi.number().required(),
@@ -23,6 +25,11 @@ router.post('/placeorder', celebrate({
     });
 });
 
+/** Get all or filtered Date from the Collection. Params are Validated Using JOI */
+/**
+ * @param searchtype
+ * @param searchParams
+ */
 router.get("/search", celebrate({
     query: {
         searchtype: Joi.string().optional().valid("returned", "placed", "delivered", "all"),
@@ -37,6 +44,10 @@ router.get("/search", celebrate({
     })
 });
 
+/** This route for genetrate the otp for validate the user. Params are Validated Using JOI*/
+/**
+ * @param orderNo
+ */
 router.get("/generateotp", celebrate({
     query: {
         orderNo: Joi.string().required(),
@@ -50,6 +61,11 @@ router.get("/generateotp", celebrate({
     });
 });
 
+/** This route for validate the otp.  Params are Validated Using JOI */
+/**
+ * @param orderNo
+ * @param otp
+ */
 router.get("/validateotp", celebrate({
     query: {
         orderNo: Joi.string().required(),

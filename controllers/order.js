@@ -5,6 +5,13 @@ const { sentOTP } = require('../utils/otp');
 const productController = require('./product');
 const userController = require('./user');
 
+/** To place a new order. This is Created only for a Internal use. I haven't Implemented UI for this. I did Using the Postman. Because I have taken User and Product the data from fake-store API Here I'm Placing the order */
+/** Param Order Data is an Object. Have validated in routes */
+/**
+ * 
+ * @param {*} orderData 
+ * @returns 
+ */
 orderController.placeOrder = async (orderData) => new Promise(async (resolve, reject) => {
     let { orderNo, userId, productId, orderDate, orderStatus, returnstatus, } = orderData;
     let user = await userController.getUserData(userId);
@@ -14,7 +21,6 @@ orderController.placeOrder = async (orderData) => new Promise(async (resolve, re
         let dateDiff = getDateDiff(deliveryDate, Date.now());
         let isReturenEligible = dateDiff > 3 ? false : true;
         let query = { "orderNo": orderNo, "product": product.productData, "user": user.userData, "orderDate": orderDate, "deliveryDate": deliveryDate, "orderStatus": orderStatus, "returnstatus": returnstatus, "returneligible": isReturenEligible, otp: "" };
-        console.log(query, deliveryDate, dateDiff);
         Order.placeOrder(query).then(async order => {
             console.log("Order Placed")
             return resolve({ status: 200, msg: "Order Placed", data: order });
@@ -25,10 +31,16 @@ orderController.placeOrder = async (orderData) => new Promise(async (resolve, re
     }
 });
 
+/** Get the products from the collection */
+/** Dynamic Params Based on Search Value for Example: searchtype=all&searchParams=<string/num> */
+/**
+ * 
+ * @param {*} orderData 
+ * @returns 
+ */
 orderController.searchOrder = async (orderData) => new Promise(async (resolve, reject) => {
     let searchType = orderData.searchtype;
     let searchParams = orderData.searchParams;
-    console.log(searchType, searchParams)
     let query = {};
     if (searchParams) {
         query = {
@@ -48,9 +60,7 @@ orderController.searchOrder = async (orderData) => new Promise(async (resolve, r
             query = {};
         }
     }
-    console.log(query)
     Order.searchOrder(query).then(order => {
-        // console.log(order);
         return resolve({ status: 200, data: order })
     }).catch(error => {
         console.log(error);
@@ -58,7 +68,12 @@ orderController.searchOrder = async (orderData) => new Promise(async (resolve, r
     })
 });
 
-
+/** For validating the user. Have used Twillio Api for OTP Purpose - Real time OTP, and OTP will send as SMS to Registered Mobile Number. OTP ONLY VALID FOR 10 MINS */
+/**
+ * 
+ * @param {*} orderNo 
+ * @returns 
+ */
 orderController.sentOTP = async (orderNo) => new Promise(async (resolve, reject) => {
     let orderQuery = { "orderNo": Number(orderNo) };
     let orderData = await Order.searchOrder(orderQuery);
@@ -73,7 +88,6 @@ orderController.sentOTP = async (orderNo) => new Promise(async (resolve, reject)
     let otpResponse = sentOTP(phone);
     if (otpResponse.status === 200) {
         Order.updateOrder({ orderNo }, { $set: { "otp": { otp: otpResponse.otp, expire: addMinutes(10, new Date()) } } }).then(otpRes => {
-            console.log(otpRes, "OTP Completed...");
             return resolve({ status: 200, otp_for_test: otpResponse.otp, msg: `OTP Sent to ${phone}` });
         }).catch(error => {
             console.log(error);
@@ -84,6 +98,13 @@ orderController.sentOTP = async (orderNo) => new Promise(async (resolve, reject)
     }
 });
 
+/** Validating the OTP */
+/**
+ * 
+ * @param {*} orderNo 
+ * @param {*} otp 
+ * @returns 
+ */
 orderController.validateOTP = async (orderNo, otp) => new Promise(async (resolve, reject) => {
     let orderQuery = { "orderNo": Number(orderNo) };
     let orderData = await Order.searchOrder(orderQuery);
@@ -97,7 +118,6 @@ orderController.validateOTP = async (orderNo, otp) => new Promise(async (resolve
     if (otpObj.expire > Date.UTC(new Date())) {
         return reject({ status: 500, msg: `OTP Expired` });
     }
-    console.log({ otpObj, otp })
     if (otpObj.otp !== otp) {
         return reject({ status: 500, msg: `Invalid OTP` });
     }
