@@ -36,8 +36,4 @@ const ProductSchema = new Schema({
 
 const Product = mongoose.model('product', ProductSchema);
 
-Product.prototype.asJson = function () {
-    console.log(this);
-};
-
 module.exports = Product;

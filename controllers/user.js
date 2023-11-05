@@ -8,13 +8,14 @@ const User = require('../models/user');
  * @param {*} id 
  * @returns 
  */
-userController.getUserData = async (id) => new Promise((resolve, reject) => {
-    User.getUser(id).then(userData => {
-        return resolve({ status: 200, userData });
-    }).catch(error => {
-        console.log(error);
-        return reject({ status: 500, error });
-    })
-})
-
+userController.getUserData = async (id) => {
+    try {
+        let userData = await User.getUser(id);
+        if(userData) {
+            return { status: 200, userData };
+        }
+    } catch (error) {
+        return { status: 500, error };
+    }
+}
 module.exports = userController;

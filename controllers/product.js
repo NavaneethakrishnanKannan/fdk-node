@@ -8,13 +8,15 @@ const Product = require('../models/product');
  * @param {*} id 
  * @returns 
  */
-productController.getProductData = async (id) => new Promise((resolve, reject) => {
-    Product.getProduct(id).then(productData => {
-        return resolve({ status: 200, productData });
-    }).catch(error => {
-        console.log(error);
-        return reject({ status: 500, error });
-    })
-})
+productController.getProductData = async (id)  => {
+    try {
+        let productData = await Product.getProduct(id);
+        if(productData) {
+            return { status: 200, productData };
+        }
+    } catch (error) {
+        return { status: 500, error };
+    }
+}
 
 module.exports = productController;

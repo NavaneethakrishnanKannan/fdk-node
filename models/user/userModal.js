@@ -34,8 +34,4 @@ const UserSchema = new Schema({
 
 const User = mongoose.model('user', UserSchema);
 
-User.prototype.asJson = function () {
-    console.log(this);
-};
-
 module.exports = User;

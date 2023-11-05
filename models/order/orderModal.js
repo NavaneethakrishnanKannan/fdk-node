@@ -46,8 +46,4 @@ const OrderSchema = new Schema({
 OrderSchema.index({ orderNo: "text" })
 const Order = mongoose.model('order', OrderSchema);
 
-Order.prototype.asJson = function () {
-	console.log(this);
-};
-
 module.exports = Order;
